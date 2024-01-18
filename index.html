@@ -14,7 +14,6 @@
             grid-template-columns: max-content max-content;
             align-items: center;
             align-content: center;
-            justify-content: center;
             gap: 3px;
         }
 
@@ -60,15 +59,18 @@
 </head>
 
 <body>
-    <div id="controls">
-        <label for="players">Players</label>
-        <input id="players" type="number" value="4">
-        <label for="seconds">Seconds</label>
-        <input id="seconds" type="number" value="20">
-        <label for="buffer">Input buffer (ms)</label>
-        <input id="buffer" type="number" value="500">
-        <button onclick="start()">Start</button>
-    </div>
+    <details open id="control-details">
+        <summary>Controls</summary>
+        <div id="controls">
+            <label for="players">Players</label>
+            <input id="players" type="number" value="4">
+            <label for="seconds">Seconds</label>
+            <input id="seconds" type="number" value="20">
+            <label for="buffer">Input buffer (ms)</label>
+            <input id="buffer" type="number" value="500">
+            <button onclick="start()">Start</button>
+        </div>
+    </details>
     <main id="main">
     </main>
     <script>
@@ -77,6 +79,7 @@
         let seconds = document.getElementById("seconds");
         let buffer = document.getElementById("buffer");
         let main = document.getElementById("main");
+        let control_details = document.getElementById("control-details");
         
         let changeBuffer = 500;
         let currentPlayer = 0;
@@ -89,6 +92,7 @@
             currentPlayer = 0;
             lastChange = null;
             playerMilliseconds = [];
+            control_details.open = false;
 
             let seconds_value = parseInt(seconds.value);
             let players_value = parseInt(players.value);

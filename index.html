@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chez Plus</title>
+    <style>
+        body {
+            background: #000020;
+            color: white;
+        }
+        #controls {
+            margin-top: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        main {
+            margin-top: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .row {
+            width: 26ch;
+            border: 3px solid lightgreen;
+            color: white;
+            padding: .5em 1em;
+            display: flex;
+            border-radius: 0.2em;
+            flex-direction: row;
+            font-size: 3em;
+            gap: 2em;
+            justify-content: space-between;
+            transition: transform 100ms, background 100ms, margin 100ms;
+        }
+
+        .active {
+            background: lightgreen;
+            box-shadow: 0px 0px 30px lightgreen;
+            color: black;
+            transform: scale(1.1);
+            margin: 0.5em 0;
+        }
+
+        .eliminated {
+            border-color: #404040;
+            color: #404040;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="controls">
+        <div>
+            <label for="players">Players</label>
+            <input id="players" type="number">
+        </div>
+        <div>
+            <label for="seconds">Seconds</label>
+            <input id="seconds" type="number">
+        </div>
+        <button onclick="start()">Start</button>
+    </div>
+    <main id="main">
+    </main>
+    <script>
+        const eliminationBuffer = 500;
+        let players = document.getElementById("players");
+        let seconds = document.getElementById("seconds");
+        let main = document.getElementById("main");
+
+        let currentPlayer = 0;
+        let playerMilliseconds = [];
+        let lastTime = 0;
+        let lastElimination = null;
+        let already_running = false;
+
+        function start() {
+            currentPlayer = 0;
+            playerMilliseconds = [];
+
+            let seconds_value = parseInt(seconds.value);
+            let players_value = parseInt(players.value)
+            for (let x = 0; x < players_value; x++) {
+                playerMilliseconds.push(seconds_value * 1000);
+            }
+
+            initialRender();
+            lastTime = Date.now();
+
+            if (!already_running) {
+                requestAnimationFrame(update);
+                already_running = true;
+            }
+        }
+
+        function update() {
+            let newTime = Date.now();
+            let diff = Date.now() - lastTime;
+
+            playerMilliseconds[currentPlayer] -= diff;
+            if (playerMilliseconds[currentPlayer] < 0) {
+                playerMilliseconds[currentPlayer] = 0;
+                lastElimination = newTime;
+                nextPlayer();
+            }
+
+            lastTime = newTime;
+
+            render();
+
+            if (checkEnoughPlayers()) {
+                requestAnimationFrame(update);
+            } else {
+                nextPlayer();
+                render();
+                already_running = false;
+            }
+        }
+
+        function checkEnoughPlayers() {
+            let count = 0;
+            for (const millis of playerMilliseconds) {
+                if (millis > 0) {
+                    count++;
+                }
+            }
+            return count > 1;
+        }
+
+        function nextPlayer() {
+            for (let i = 0; i < playerMilliseconds.length; i++) {
+                currentPlayer = (currentPlayer + 1) % playerMilliseconds.length;
+                if (playerMilliseconds[currentPlayer] > 0) {
+                    return;
+                }
+            }
+        }
+
+        function render() {
+            for (let i = 0; i < playerMilliseconds.length; i++) {
+                let seconds = playerMilliseconds[i] / 1000;
+                main.children[i].classList.toggle("eliminated", seconds === 0);
+                main.children[i].classList.toggle("active", i === currentPlayer);
+                main.children[i].children[1].innerHTML = seconds.toFixed(3);
+            }
+        }
+
+        function initialRender() {
+            main.innerHTML = "";
+            for (let i = 0; i < playerMilliseconds.length; i++) {
+                let seconds = playerMilliseconds[i] / 1000;
+                let additional = "";
+                if (seconds === 0) {
+                    additional = "eliminated";
+                } else if (i === currentPlayer) {
+                    additional = "active";
+                }
+                main.innerHTML += `<div class="row ${additional}"><div>Player ${i + 1}</div><div>${seconds.toFixed(3)}</div>`;
+            }
+        }
+
+        document.addEventListener("keyup", (ev) => {
+            if (ev.key === " ") {
+                ev.preventDefault();
+                if (Date.now() - lastElimination > eliminationBuffer) {
+                    nextPlayer();
+                }
+            }
+        });
+
+        main.addEventListener("mouseup", (ev) => {
+            if (Date.now() - lastElimination > eliminationBuffer) {
+                nextPlayer();
+            }
+        })
+    </script>
+</body>
+
+</html>

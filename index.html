@@ -117,6 +117,7 @@
         let already_running = false;
 
         function start() {
+            document.documentElement.requestFullscreen();
             currentPlayer = 0;
             lastChange = null;
             playerMilliseconds = [];

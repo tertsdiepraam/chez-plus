@@ -67,7 +67,8 @@
     <main id="main">
     </main>
     <script>
-        const eliminationBuffer = 500;
+        // Milliseconds to wait before allowing another player change
+        const changeBuffer = 500;
         let players = document.getElementById("players");
         let seconds = document.getElementById("seconds");
         let main = document.getElementById("main");
@@ -75,11 +76,12 @@
         let currentPlayer = 0;
         let playerMilliseconds = [];
         let lastTime = 0;
-        let lastElimination = null;
+        let lastChange = null;
         let already_running = false;
 
         function start() {
             currentPlayer = 0;
+            lastChange = null;
             playerMilliseconds = [];
 
             let seconds_value = parseInt(seconds.value);
@@ -104,7 +106,6 @@
             playerMilliseconds[currentPlayer] -= diff;
             if (playerMilliseconds[currentPlayer] < 0) {
                 playerMilliseconds[currentPlayer] = 0;
-                lastElimination = newTime;
                 nextPlayer();
             }
 
@@ -135,6 +136,7 @@
             for (let i = 0; i < playerMilliseconds.length; i++) {
                 currentPlayer = (currentPlayer + 1) % playerMilliseconds.length;
                 if (playerMilliseconds[currentPlayer] > 0) {
+                    lastChange = Date.now();
                     return;
                 }
             }
@@ -166,14 +168,14 @@
         document.addEventListener("keyup", (ev) => {
             if (ev.key === " ") {
                 ev.preventDefault();
-                if (Date.now() - lastElimination > eliminationBuffer) {
+                if (lastChange === null || Date.now() - lastChange > changeBuffer) {
                     nextPlayer();
                 }
             }
         });
 
         main.addEventListener("mouseup", (ev) => {
-            if (Date.now() - lastElimination > eliminationBuffer) {
+            if (lastChange === null || Date.now() - lastChange > changeBuffer) {
                 nextPlayer();
             }
         })

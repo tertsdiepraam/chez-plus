@@ -7,14 +7,17 @@
         body {
             background: #000020;
             color: white;
+            margin: 0;
         }
+
         #controls {
-            margin-top: 2em;
             display: grid;
             grid-template-columns: max-content max-content;
             align-items: center;
             align-content: center;
             gap: 10px;
+            background: #000020;
+            padding: 10px;
         }
 
         #control-details {
@@ -41,7 +44,6 @@
         }
 
         main {
-            margin-top: 2em;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -90,6 +92,8 @@
             <input id="seconds" type="number" value="20">
             <label for="buffer">Input buffer (ms)</label>
             <input id="buffer" type="number" value="500">
+            <label for="increment">Increment (ms)</label>
+            <input id="increment" type="number" value="1000">
             <button onclick="start()">Start</button>
         </div>
     </details>
@@ -101,9 +105,11 @@
         let seconds = document.getElementById("seconds");
         let buffer = document.getElementById("buffer");
         let main = document.getElementById("main");
+        let increment_el = document.getElementById("increment");
         let control_details = document.getElementById("control-details");
         
         let changeBuffer = 500;
+        let increment = 0;
         let currentPlayer = 0;
         let playerMilliseconds = [];
         let lastTime = 0;
@@ -118,6 +124,7 @@
 
             let seconds_value = parseInt(seconds.value);
             let players_value = parseInt(players.value);
+            increment = parseInt(increment_el.value);
             changeBuffer = parseInt(buffer.value);
             for (let x = 0; x < players_value; x++) {
                 playerMilliseconds.push(seconds_value * 1000);
@@ -202,6 +209,7 @@
             if (ev.key === " ") {
                 ev.preventDefault();
                 if (lastChange === null || Date.now() - lastChange > changeBuffer) {
+                    playerMilliseconds[currentPlayer] += increment;
                     nextPlayer();
                 }
             }
@@ -209,6 +217,7 @@
 
         main.addEventListener("mouseup", (ev) => {
             if (lastChange === null || Date.now() - lastChange > changeBuffer) {
+                playerMilliseconds[currentPlayer] += increment;
                 nextPlayer();
             }
         })

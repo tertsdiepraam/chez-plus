@@ -10,9 +10,16 @@
         }
         #controls {
             margin-top: 2em;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: max-content max-content;
             align-items: center;
+            align-content: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        #controls > *:last-child {
+            grid-column: 1 / span 2;
         }
 
         main {
@@ -31,7 +38,7 @@
             display: flex;
             border-radius: 0.2em;
             flex-direction: row;
-            font-size: 3em;
+            font-size: 2em;
             gap: 2em;
             justify-content: space-between;
             transition: transform 100ms, background 100ms, margin 100ms;
@@ -54,25 +61,24 @@
 
 <body>
     <div id="controls">
-        <div>
-            <label for="players">Players</label>
-            <input id="players" type="number">
-        </div>
-        <div>
-            <label for="seconds">Seconds</label>
-            <input id="seconds" type="number">
-        </div>
+        <label for="players">Players</label>
+        <input id="players" type="number" value="4">
+        <label for="seconds">Seconds</label>
+        <input id="seconds" type="number" value="20">
+        <label for="buffer">Input buffer (ms)</label>
+        <input id="buffer" type="number" value="500">
         <button onclick="start()">Start</button>
     </div>
     <main id="main">
     </main>
     <script>
         // Milliseconds to wait before allowing another player change
-        const changeBuffer = 500;
         let players = document.getElementById("players");
         let seconds = document.getElementById("seconds");
+        let buffer = document.getElementById("buffer");
         let main = document.getElementById("main");
-
+        
+        let changeBuffer = 500;
         let currentPlayer = 0;
         let playerMilliseconds = [];
         let lastTime = 0;
@@ -85,7 +91,8 @@
             playerMilliseconds = [];
 
             let seconds_value = parseInt(seconds.value);
-            let players_value = parseInt(players.value)
+            let players_value = parseInt(players.value);
+            changeBuffer = parseInt(buffer.value);
             for (let x = 0; x < players_value; x++) {
                 playerMilliseconds.push(seconds_value * 1000);
             }

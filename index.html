@@ -205,21 +205,26 @@
             }
         }
 
-        document.addEventListener("keyup", (ev) => {
-            if (ev.key === " ") {
-                ev.preventDefault();
-                if (lastChange === null || Date.now() - lastChange > changeBuffer) {
-                    playerMilliseconds[currentPlayer] += increment;
-                    nextPlayer();
-                }
-            }
-        });
-
-        main.addEventListener("mouseup", (ev) => {
+        function clickNextPlayer() {
             if (lastChange === null || Date.now() - lastChange > changeBuffer) {
                 playerMilliseconds[currentPlayer] += increment;
                 nextPlayer();
             }
+        }
+
+        document.addEventListener("keydown", (ev) => {
+            if (ev.key === " ") {
+                ev.preventDefault();
+                clickNextPlayer();
+            }
+        });
+
+        main.addEventListener("mousedown", (ev) => {
+            clickNextPlayer();
+        })
+
+        main.addEventListener("touchstart", (ev) => {
+            clickNextPlayer();
         })
     </script>
 </body>

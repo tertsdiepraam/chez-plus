@@ -96,7 +96,7 @@
             <input id="buffer" type="number" value="500">
             <label for="increment">Increment (ms)</label>
             <input id="increment" type="number" value="1000">
-            <button onclick="start()">Start</button>
+            <button id="start-button">Start</button>
         </div>
     </details>
     <main id="main">
@@ -229,6 +229,8 @@
         main.addEventListener("touchstart", (ev) => {
             clickNextPlayer();
         })
+
+        document.getElementById("start-button").addEventListener("click", (ev) => { start() });
     </script>
 </body>
 
